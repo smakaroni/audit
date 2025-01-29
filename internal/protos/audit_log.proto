@@ -1,0 +1,12 @@
+syntax = "proto3";
+package models;
+
+import "google/protobuf/timestamp.proto";
+option go_package = "internal/protos";
+
+message AuditLog {
+  string event_type = 1;
+  string anonymized_user = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  string data = 4;
+}
