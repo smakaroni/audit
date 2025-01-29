@@ -17,8 +17,8 @@ func main() {
 	}
 	defer consumer.Close()
 
-	// Set up PostgreSQL connection
-	db, err := database.NewPostgresDB("postgres://username:password@localhost:5432/audit_db")
+	// Set up MariaDB connection
+	db, err := database.NewMariaDB("user:password@tcp(localhost:3306)/audit_db")
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
@@ -51,6 +51,6 @@ func main() {
 			continue
 		}
 
-		log.Printf("Saved anonymized event: %+v\n", event)
+		log.Printf("Saved audit event: %+v\n", event)
 	}
 }
