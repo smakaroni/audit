@@ -20,21 +20,22 @@ func NewPostgresDB(connString string) (*PostgresDB, error) {
 
 func (db *PostgresDB) CreateTableIfNotExists() error {
 	_, err := db.pool.Exec(context.Background(), `
-		CREATE TABLE IF NOT EXISTS audit_logs (
-			id SERIAL PRIMARY KEY,
-			event_type TEXT,
-			anonymized_user TEXT,
-			timestamp TIMESTAMP,
-			anonymized_data JSONB
-		)
-	`)
+        CREATE TABLE IF NOT EXISTS audit_logs (
+            id SERIAL PRIMARY KEY,
+            proto_data BYTEA
+        )
+    `)
 	return err
 }
 
 func (db *PostgresDB) InsertAuditLog(log *models.AuditLog) error {
-	_, err := db.pool.Exec(context.Background(),
-		"INSERT INTO audit_logs (event_type, anonymized_user, timestamp, anonymized_data) VALUES ($1, $2, $3, $4)",
-		log.EventType, log.AnonymizedUser, log.Timestamp, log.Data)
+	protoData, err := models.ToProto(log)
+	if err != nil {
+		return err
+	}
+	_, err = db.pool.Exec(context.Background(),
+		"INSERT INTO audit_logs (proto_data) VALUES ($1)",
+		protoData)
 	return err
 }
 
