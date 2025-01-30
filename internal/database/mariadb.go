@@ -45,3 +45,12 @@ func (m *MariaDB) InsertAuditLog(log *models.AuditLog) error {
 func (m *MariaDB) Close() error {
 	return m.db.Close()
 }
+
+func (m *MariaDB) GetLatestAuditLog() (*models.AuditLog, error) {
+	var protoData []byte
+	err := m.db.QueryRow("SELECT proto_data FROM audit_logs ORDER BY id DESC LIMIT 1").Scan(&protoData)
+	if err != nil {
+		return nil, err
+	}
+	return models.AuditLogFromProto(protoData)
+}
